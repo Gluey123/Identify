@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Define the output file
+OUTPUT_FILE="installed_apps.txt"
+
+# Create or clear the output file
+echo "Creating or clearing the output file..."
+> "$OUTPUT_FILE"
+
+# Header
+echo "===== Installed Applications (Package Manager) =====" >> "$OUTPUT_FILE"
+
+# Initialize counters
+app_count=0
+service_count=0
+
+# Check installed packages (Debian/Ubuntu-based systems)
+if command -v dpkg &> /dev/null; then
+    echo "Gathering installed packages using dpkg..." >> "$OUTPUT_FILE"
+    dpkg -l >> "$OUTPUT_FILE"
+    app_count=$(dpkg -l | grep '^ii' | wc -l)
+elif command -v rpm &> /dev/null; then
+    # For Red Hat/CentOS-based systems
+    echo "Gathering installed packages using rpm..." >> "$OUTPUT_FILE"
+    rpm -qa >> "$OUTPUT_FILE"
+    app_count=$(rpm -qa | wc -l)
+elif command -v pacman &> /dev/null; then
+    # For Arch-based systems
+    echo "Gathering installed packages using pacman..." >> "$OUTPUT_FILE"
+    pacman -Q >> "$OUTPUT_FILE"
+    app_count=$(pacman -Q | wc -l)
+else
+    echo "No recognized package manager found." >> "$OUTPUT_FILE"
+fi
+
+# New section for services
+echo "" >> "$OUTPUT_FILE"
+echo "===== Running Services =====" >> "$OUTPUT_FILE"
+
+# List active services using systemctl
+if command -v systemctl &> /dev/null; then
+    echo "Listing active services..." >> "$OUTPUT_FILE"
+    systemctl list-units --type=service --state=running >> "$OUTPUT_FILE"
+    service_count=$(systemctl list-units --type=service --state=running | grep '.service' | wc -l)
+fi
+
+# Summary section
+echo "" >> "$OUTPUT_FILE"
+echo "===== Summary =====" >> "$OUTPUT_FILE"
+echo "Total Installed Applications: $app_count" >> "$OUTPUT_FILE"
+echo "Total Running Services: $service_count" >> "$OUTPUT_FILE"
+
+# Inform the user
+echo "Installed applications and running services have been saved to $OUTPUT_FILE."
+echo "There are $app_count applications installed and $service_count services running."

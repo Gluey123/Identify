@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Define the output file
+OUTPUT_FILE="system_info.txt"
+
+# Create or clear the output file
+> "$OUTPUT_FILE"
+
+# Function to append section headers
+function append_header {
+    echo "===== $1 =====" >> "$OUTPUT_FILE"
+}
+
+# Hard Drive Space
+append_header "Hard Drive Space"
+df -h >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Memory Information
+append_header "Memory Information"
+free -h >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Processor Information
+append_header "Processor Information"
+lscpu >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Operating System Version
+append_header "Operating System Version"
+uname -a >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+lsb_release -a >> "$OUTPUT_FILE" 2>/dev/null
+echo "" >> "$OUTPUT_FILE"
+
+# Network Interfaces
+append_header "Network Interfaces"
+ip addr >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Graphics Card Information
+append_header "Graphics Card Information"
+lspci | grep -i vga >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+lshw -C display 2>/dev/null >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Running Processes
+append_header "Running Processes"
+ps aux >> "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Inform the user
+echo "System information has been saved to $OUTPUT_FILE."
