@@ -8,7 +8,7 @@ BANNER=`cat index.html` # notice these are ` and not '. The command will run inc
 
 # create a temp lock file, to ensure only one instance of the HP is running
 touch /tmp/hpot.hld
-
+# Allosws for better Cntrl-c interuptts
 trap "rm -f /tmp/hpot.hld; echo 'HoneyPot stopped'; exit " SIGINT
 
 echo "" >> $LOG
