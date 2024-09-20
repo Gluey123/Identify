@@ -34,12 +34,12 @@ pip install -r requirements.txt
 cp etc/cowrie.cfg.dist etc/cowrie.cfg
 cp etc/userdb.example etc/userdb.txt
 
-# Set Cowrie to listen on port 2222 (or change to another port if desired)
-sed -i 's/#listen_endpoints = tcp\:22:interface=0.0.0.0/listen_endpoints = tcp\:2222:interface=0.0.0.0/g' etc/cowrie.cfg
+# Set Cowrie to listen on port 22 (or change to another port if desired)
+sed -i 's/#listen_endpoints = tcp\:22:interface=0.0.0.0/listen_endpoints = tcp\:22:interface=0.0.0.0/g' etc/cowrie.cfg
 
 # Start Cowrie
 bin/cowrie start
 
 EOF
 
-echo "Cowrie SSH Honeypot has been installed and started on port 2222!"
+echo "Cowrie SSH Honeypot has been installed and started on port 22"
