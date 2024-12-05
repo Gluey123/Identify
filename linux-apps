@@ -14,21 +14,22 @@ echo "===== Installed Applications (Package Manager) =====" >> "$OUTPUT_FILE"
 app_count=0
 service_count=0
 
-# Check installed packages (Debian/Ubuntu-based systems)
+# Check installed packages
 if command -v dpkg &> /dev/null; then
+    # For Debian/Ubuntu-based systems
     echo "Gathering installed packages using dpkg..." >> "$OUTPUT_FILE"
-    dpkg -l >> "$OUTPUT_FILE"
-    app_count=$(dpkg -l | grep '^ii' | wc -l)
+    dpkg -l >> "$OUTPUT_FILE" 2>/dev/null
+    app_count=$(dpkg -l 2>/dev/null | grep '^ii' | wc -l)
 elif command -v rpm &> /dev/null; then
     # For Red Hat/CentOS-based systems
     echo "Gathering installed packages using rpm..." >> "$OUTPUT_FILE"
-    rpm -qa >> "$OUTPUT_FILE"
-    app_count=$(rpm -qa | wc -l)
+    rpm -qa >> "$OUTPUT_FILE" 2>/dev/null
+    app_count=$(rpm -qa 2>/dev/null | wc -l)
 elif command -v pacman &> /dev/null; then
     # For Arch-based systems
     echo "Gathering installed packages using pacman..." >> "$OUTPUT_FILE"
-    pacman -Q >> "$OUTPUT_FILE"
-    app_count=$(pacman -Q | wc -l)
+    pacman -Q >> "$OUTPUT_FILE" 2>/dev/null
+    app_count=$(pacman -Q 2>/dev/null | wc -l)
 else
     echo "No recognized package manager found." >> "$OUTPUT_FILE"
 fi
@@ -39,9 +40,16 @@ echo "===== Running Services =====" >> "$OUTPUT_FILE"
 
 # List active services using systemctl
 if command -v systemctl &> /dev/null; then
-    echo "Listing active services..." >> "$OUTPUT_FILE"
-    systemctl list-units --type=service --state=running >> "$OUTPUT_FILE"
-    service_count=$(systemctl list-units --type=service --state=running | grep '.service' | wc -l)
+    echo "Listing active services using systemctl..." >> "$OUTPUT_FILE"
+    systemctl list-units --type=service --state=running >> "$OUTPUT_FILE" 2>/dev/null
+    service_count=$(systemctl list-units --type=service --state=running 2>/dev/null | grep '.service' | wc -l)
+elif command -v service &> /dev/null; then
+    # Fallback for older systems using the 'service' command
+    echo "Listing active services using service command..." >> "$OUTPUT_FILE"
+    service --status-all 2>/dev/null | grep '+' >> "$OUTPUT_FILE"
+    service_count=$(service --status-all 2>/dev/null | grep '+' | wc -l)
+else
+    echo "No recognized service manager found." >> "$OUTPUT_FILE"
 fi
 
 # Summary section
